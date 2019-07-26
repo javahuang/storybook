@@ -11,6 +11,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
+    "react-syntax-highlighter": "^11.0.2",
     "typescript": "3.5.3"
   },
   "scripts": {
@@ -40,6 +41,7 @@
     "@babel/core": "^7.5.5",
     "@storybook/addon-actions": "^5.1.9",
     "@storybook/addon-console": "^1.2.1",
+    "@storybook/addon-cssresources": "^5.1.9",
     "@storybook/addon-links": "^5.1.9",
     "@storybook/addon-notes": "^5.1.9",
     "@storybook/addon-storysource": "^5.1.9",
