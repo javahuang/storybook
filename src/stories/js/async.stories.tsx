@@ -7,7 +7,7 @@ import { storiesOf } from "@storybook/react";
 
 import notes from "./async.md";
 
-storiesOf("js|async", module).add("async", () => <Async />, {
+storiesOf("js|异步编程", module).add("async", () => <Async />, {
   notes: { markdown: notes }
 });
 
@@ -19,7 +19,7 @@ function testAsync() {
   }
   // 返回是一个 Promise 对象
   async function asyncPrint(value: string, ms: number) {
-    let x = 12;
+    let x = 1234;
     let b = await timeout(ms);
     console.log("b" + b);
     console.log(value);
@@ -28,13 +28,13 @@ function testAsync() {
 
   // async 表示函数内部有异步操作，调用该函数会立即返回一个 Promise 对象
   // 遇到 await 会闲返回，等到异步操作完成，接着执行后面的语句
-  asyncPrint("hello world", 5000).then(function(result) {
+  asyncPrint("hello world", 5000).then(function (result) {
     console.log("result:" + result);
   });
 }
 
 const codeString = `
-function timeout(ms: number) {
+  function timeout(ms: number) {
     return new Promise((resolve: any) => {
       setTimeout(resolve("123"), ms);
     });

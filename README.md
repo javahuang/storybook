@@ -22,3 +22,6 @@ yarn add -D @storybook/addon-cssresources
 [react-app-rewired](https://github.com/timarney/react-app-rewired)
 [storybook docs](https://storybook.js.org/docs/basics/introduction/)
 [@storybook/addon-cssresources](https://www.npmjs.com/package/@storybook/addon-cssresources/v/4.1.0-alpha.11)
+
+
+storybook 解决了什么痛点？我没感觉到
