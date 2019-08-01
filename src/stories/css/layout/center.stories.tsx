@@ -5,32 +5,35 @@ import { storiesOf } from "@storybook/react";
 
 import "./center.css";
 import notes from "./center.md";
-import SourceComponent from '../../react/components/SourceComponent'
+import LiveEditor, { CodeProps } from "../../react/components/LiveEditor";
 
 storiesOf("css|布局", module).add("center", () => <All />, {
-    notes: { markdown: notes }
+  notes: { markdown: notes }
 });
 
-const code1 = `
-.triangle1 {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 20px 20px 20px;
-    border-color: transparent transparent #ff0073 transparent;
+const code1: CodeProps = {
+  html: `
+    <div class="t1-p">
+          <div class="t1-c">this is a test</div>
+    </div>
+    `,
+  css: `
+.t1-p{
+  border: 1px solid red;
+  text-align: center;
+}
+.t1-c{
+  border: 1px solid black;
+  display: inline-block;
 }
 `
+};
 
 function All() {
-    return (
-        <div className="center">
-            <SourceComponent code={code1} language="css" title="">
-                <div className="t1-p">
-                    <div className="t1-c">
-                        this is a test
-                    </div>
-                </div>
-            </SourceComponent>
-        </div>
-    );
+  return (
+    <div>
+      <LiveEditor code={code1} defaultMode="css" />
+      <LiveEditor code={code1} defaultMode="css" />
+    </div>
+  );
 }

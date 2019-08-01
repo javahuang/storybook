@@ -22,13 +22,13 @@ import close from "./close.svg";
 require("codemirror/mode/css/css");
 require("codemirror/mode/htmlmixed/htmlmixed");
 
-interface CodeProps {
+export interface CodeProps {
   html?: string;
   css?: string;
   javascript?: string;
 }
 
-interface SourceComponentProps {
+export interface SourceComponentProps {
   code: CodeProps | string;
   title?: string;
   defaultMode?: "html" | "all" | "css" | "javascript";
@@ -83,6 +83,7 @@ export default function LiveEditor(props: SourceComponentProps) {
   const [codeFull, setCodeFull] = useState(defaultCodeFull);
   const [previewFull, setPreviewFull] = useState(defaultPreviewFull);
 
+  const previewRef = useRef(null);
   const editor = useRef<any>();
 
   const options = {
@@ -96,7 +97,7 @@ export default function LiveEditor(props: SourceComponentProps) {
   };
 
   function updatePreview() {
-    var previewFrame = document.getElementById("preview");
+    var previewFrame = previewRef.current;
     var preview =
       previewFrame.contentDocument || previewFrame.contentWindow.document;
     preview.open();
@@ -215,7 +216,7 @@ export default function LiveEditor(props: SourceComponentProps) {
           </h3>
           <div style={{ padding: 10 }}>
             <iframe
-              id="preview"
+              ref={previewRef}
               style={{ width: "100%", borderColor: "transparent" }}
               onLoad={e => {
                 const obj = e.target;
