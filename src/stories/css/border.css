@@ -1,0 +1,63 @@
+.triangle1 {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 20px;
+  border-color: transparent transparent #ff0073 transparent;
+}
+
+.triangle2 {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 40px;
+  border-color: blue green #ff0073 yellow;
+}
+
+.contentWrapper {
+  background: #03A9F4;
+  width: 400px;
+  overflow: hidden;
+  text-align: center;
+  line-height:15px;
+}
+.innerContent {
+  margin: 10px auto;
+  width: 40px;
+  height: 20px;
+  padding: 20px;
+  border-style: solid;
+  border-width: 40px;
+  border-color: blue green #ff0073 yellow;
+}
+
+.dubble {
+  width: 150px;
+  height: 36px;
+  border: 1px solid black;
+  border-radius: 5px;
+  position: relative;
+  background: rgba(245,245,245,1);
+}
+
+.dubble::before,.dubble::after{
+  content: "";  /*:before和:after必带技能，重要性为满5颗星*/
+  display: block;
+  position: absolute;  /*日常绝对定位*/
+  top:8px;
+  width: 0;
+  height: 0;
+  border:6px transparent solid;
+}
+
+.dubble::before {
+  left: -11px;
+  border-right-color: rgba(245,245,245,1);
+  z-index: 1 /*目的是遮盖div的边框*/;
+}
+
+.dubble::after {
+  left: -12px;
+  border-right-color: rgba(0,0,0,1);
+  z-index: 0;
+}
