@@ -3,7 +3,7 @@ import React from "react";
 
 import { storiesOf } from "@storybook/react";
 
-import LiveEditor from '../react/components/LiveEditor'
+import LiveEditor from "../react/components/LiveEditor";
 import notes from "./weather.md";
 
 storiesOf("css|测试", module).add("11", () => <All />, {
@@ -12,13 +12,12 @@ storiesOf("css|测试", module).add("11", () => <All />, {
 
 const code = `
 <div>hello world</div>
-`
-
+`;
 
 function All() {
   return (
     <>
-      <LiveEditor />
+      <LiveEditor code={code} defaultMode="html" />
     </>
   );
 }

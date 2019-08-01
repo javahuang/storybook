@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Controlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css';
+import React, { useState, useEffect, useRef, ChangeEventHandler } from "react";
+import { Controlled as CodeMirror } from "react-codemirror2";
+import "codemirror/lib/codemirror.css";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/javascript/javascript.js";
@@ -15,103 +15,217 @@ import "codemirror/addon/hint/html-hint";
 import "codemirror/addon/hint/javascript-hint";
 import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/hint/show-hint.css";
+import "./index.css";
+import full from "./full.svg";
+import close from "./close.svg";
 
+require("codemirror/mode/css/css");
+require("codemirror/mode/htmlmixed/htmlmixed");
 
-require('codemirror/mode/css/css');
-require('codemirror/mode/htmlmixed/htmlmixed');
-
-interface SourceComponentProps {
-    code?: string;
-    language?: "text/css" | "text/html" | "text/javascript";
-    title?: string
+interface CodeProps {
+  html?: string;
+  css?: string;
+  javascript?: string;
 }
 
+interface SourceComponentProps {
+  code: CodeProps | string;
+  title?: string;
+  defaultMode?: "html" | "all" | "css" | "javascript";
+  defaultCodeFull?: boolean;
+  defaultPreviewFull?: boolean;
+}
 
-const codeTemplate = `
+function buildHtml(code: CodeProps): string {
+  return `
 <html>
 <head>
 <style type="text/css">
-
+    ${code.css}
 </style>
 </head>
-
 <body>
-
+    ${code.html ? code.html : ""}
 </body>
-
+<script>
+    ${code.javascript}
+</script>
 </html>
-`
+    `;
+}
+
+const modeType = {
+  css: "text/css",
+  html: "text/html",
+  javascript: "text/javascript",
+  all: "text/html"
+};
+
 export default function LiveEditor(props: SourceComponentProps) {
-
-    const { code = codeTemplate, language = "text/html", title } = props;
-
-    const [value, setValue] = useState(code);
-    const [mode, setMode] = useState("text/html")
-
-    const editor = useRef<any>();
-
-    const options = {
-        mode,
-        // theme: 'solarized light',
-        lineNumbers: true,
-        styleActiveLine: true, // 选中行高亮
-        lineWrapping: true,
-        extraKeys: { "Alt-/": "autocomplete" },
-    }
-
-    function updatePreview() {
-        var previewFrame = document.getElementById('preview');
-        var preview = previewFrame.contentDocument || previewFrame.contentWindow.document;
-        preview.open();
-        preview.write(value);
-        preview.close();
-    }
-
-    useEffect(() => {
-        const delay = setTimeout(updatePreview, 400);
-        return () => {
-            clearTimeout(delay);
+  const {
+    code,
+    defaultMode = "all",
+    title,
+    defaultCodeFull,
+    defaultPreviewFull
+  } = props;
+  const [value, setValue] = useState<CodeProps>(
+    typeof code === "string"
+      ? {
+          html: code
         }
-    }, [value])
+      : code
+  );
+  const [mode, setMode] = useState<"css" | "html" | "javascript" | "all">(
+    defaultMode
+  );
 
-    useEffect(() => {
-        console.dir(editor.current)
-    }, [mode])
+  const [codeFull, setCodeFull] = useState(defaultCodeFull);
+  const [previewFull, setPreviewFull] = useState(defaultPreviewFull);
 
-    return (
-        <div style={{ display: 'flex', border: '1px solid #03A9F4', marginBottom: 10 }}>
-            {
-                code && <div style={{ flex: 1, borderRight: '3px solid #2196F3' }}>
-                    <h3 style={{ lineHeight: '30px', margin: 0, fontSize: 12, background: '#f0f3f9', paddingLeft: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        代码{title ? `-${title}` : ""}
-                        <select style={{ height: 20, marginRight: 10 }} onChange={e => setMode(e.target.value)}>
-                            <option value="text/html">all</option>
-                            <option value="text/css">css</option>
-                            <option value="text/javascript">javascript</option>
-                            <option value="text/html">html</option>
-                        </select>
-                    </h3>
-                    <CodeMirror
-                        autoCursor
-                        editorDidMount={e => editor.current = e}
-                        value={value}
-                        options={options}
-                        onBeforeChange={(editor, data, val) => {
-                            console.log(val)
-                            setValue(val);
-                        }}
-                    />
-                </div>
-            }
-            <div style={{ flex: 1 }}>
-                < h3 style={{ lineHeight: '30px', margin: 0, fontSize: 12, background: '#f0f3f9', paddingLeft: 10 }}>效果</h3>
-                <div style={{ padding: 10 }}>
-                    <iframe id="preview" style={{ width: '100%', borderColor: 'transparent' }} onLoad={e => {
-                        const obj = e.target;
-                        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-                    }}></iframe>
-                </div>
-            </div>
+  const editor = useRef<any>();
+
+  const options = {
+    mode: modeType[mode],
+    // theme: 'solarized light',
+    lineNumbers: true,
+    styleActiveLine: true, // 选中行高亮
+    lineWrapping: true,
+    extraKeys: { "Alt-/": "autocomplete" },
+    viewportMargin: Infinity
+  };
+
+  function updatePreview() {
+    var previewFrame = document.getElementById("preview");
+    var preview =
+      previewFrame.contentDocument || previewFrame.contentWindow.document;
+    preview.open();
+    preview.write(buildHtml(value));
+    preview.close();
+  }
+
+  useEffect(() => {
+    const delay = setTimeout(updatePreview, 600);
+    return () => {
+      clearTimeout(delay);
+    };
+  }, [value]);
+
+  useEffect(() => {}, [mode]);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        border: "1px solid #03A9F4",
+        marginBottom: 10,
+        marginRight: 20
+      }}
+    >
+      {code && !previewFull && (
+        <div style={{ flex: 1, borderRight: "3px solid #2196F3" }}>
+          <h3
+            style={{
+              lineHeight: "30px",
+              margin: 0,
+              fontSize: 12,
+              background: "#f0f3f9",
+              paddingLeft: 10,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            代码{title ? `-${title}` : ""}
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <select
+                style={{ height: 20, marginRight: 10 }}
+                onChange={e => setMode(e.target.value)}
+                value={mode}
+              >
+                <option value="all">all</option>
+                <option value="css">css</option>
+                <option value="javascript">javascript</option>
+                <option value="html">html</option>
+              </select>
+              {!codeFull && (
+                <img
+                  src={full}
+                  style={{ height: 17 }}
+                  onClick={() => setCodeFull(true)}
+                  alt="full"
+                />
+              )}
+              {codeFull && (
+                <img
+                  src={close}
+                  onClick={() => setCodeFull(false)}
+                  style={{ height: 17 }}
+                  alt="close"
+                />
+              )}
+            </span>
+          </h3>
+          <CodeMirror
+            autoCursor
+            className="codeMirror"
+            editorDidMount={e => (editor.current = e)}
+            value={mode === "all" ? buildHtml(value) : value[mode]}
+            options={options}
+            onBeforeChange={(editor, data, val) => {
+              setValue({
+                ...value,
+                [`${mode}`]: val
+              });
+            }}
+          />
         </div>
-    )
+      )}
+      {!codeFull && (
+        <div style={{ flex: 1 }}>
+          <h3
+            style={{
+              lineHeight: "30px",
+              margin: 0,
+              fontSize: 12,
+              background: "#f0f3f9",
+              paddingLeft: 10,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            效果
+            {!previewFull && (
+              <img
+                src={full}
+                style={{ height: 17 }}
+                onClick={() => setPreviewFull(true)}
+                alt="full"
+              />
+            )}
+            {previewFull && (
+              <img
+                src={close}
+                onClick={() => setPreviewFull(false)}
+                style={{ height: 17 }}
+                alt="close"
+              />
+            )}
+          </h3>
+          <div style={{ padding: 10 }}>
+            <iframe
+              id="preview"
+              style={{ width: "100%", borderColor: "transparent" }}
+              onLoad={e => {
+                const obj = e.target;
+                obj.style.height =
+                  obj.contentWindow.document.body.scrollHeight + "px";
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
